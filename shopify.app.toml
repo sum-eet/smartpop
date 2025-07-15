@@ -1,0 +1,32 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "c079c6354361fd5b162a48b83036bca3"
+name = "smartpop"
+handle = "smartpop-1"
+application_url = "https://venues-decorating-l-deep.trycloudflare.com"
+embedded = true
+
+[build]
+include_config_on_deploy = true
+automatically_update_urls_on_dev = true
+
+[webhooks]
+api_version = "2025-07"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = ["https://venues-decorating-l-deep.trycloudflare.com/auth/callback", "https://venues-decorating-l-deep.trycloudflare.com/auth/shopify/callback", "https://venues-decorating-l-deep.trycloudflare.com/api/auth/callback"]
+
+[pos]
+embedded = false
