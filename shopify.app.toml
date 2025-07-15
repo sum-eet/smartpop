@@ -23,7 +23,7 @@ api_version = "2025-07"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products"
+scopes = "write_script_tags,read_script_tags"
 
 [auth]
 redirect_urls = ["https://smartpop.vercel.app/auth/callback", "https://smartpop.vercel.app/auth/shopify/callback", "https://smartpop.vercel.app/api/auth/callback"]
