@@ -4,8 +4,7 @@ import {
   AppDistribution,
   shopifyApp,
 } from "@shopify/shopify-app-remix/server";
-import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
-import prisma from "./db.server";
+import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
 console.log("🔍 Shopify app config:", {
   hasApiKey: !!process.env.SHOPIFY_API_KEY,
@@ -25,7 +24,7 @@ const shopify = shopifyApp({
   scopes: process.env.SCOPES?.split(","),
   appUrl: process.env.SHOPIFY_APP_URL || "https://smartpop.vercel.app",
   authPathPrefix: "/auth",
-  sessionStorage: new PrismaSessionStorage(prisma),
+  sessionStorage: new MemorySessionStorage(),
   distribution: AppDistribution.AppStore,
   isEmbeddedApp: true,
   future: {
