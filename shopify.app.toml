@@ -3,7 +3,7 @@
 client_id = "c079c6354361fd5b162a48b83036bca3"
 name = "smartpop"
 handle = "smartpop-1"
-app_url = "https://smartpop.vercel.app"
+application_url = "https://smartpop.vercel.app"
 embedded = true
 
 [build]

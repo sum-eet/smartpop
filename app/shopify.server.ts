@@ -4,7 +4,8 @@ import {
   AppDistribution,
   shopifyApp,
 } from "@shopify/shopify-app-remix/server";
-import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
+import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
+import prisma from "./db.server";
 
 console.log("🔍 Shopify app config:", {
   hasApiKey: !!process.env.SHOPIFY_API_KEY,
@@ -17,21 +18,22 @@ console.log("🔍 Shopify app config:", {
   apiVersion: ApiVersion.January25
 });
 
+const prismaSessionStorage = new PrismaSessionStorage(prisma);
+
 const shopify = shopifyApp({
-  apiKey: process.env.SHOPIFY_API_KEY,
-  apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
+  apiKey: process.env.SHOPIFY_API_KEY!,
+  apiSecretKey: process.env.SHOPIFY_API_SECRET!,
   apiVersion: ApiVersion.January25,
   scopes: process.env.SCOPES?.split(","),
   appUrl: process.env.SHOPIFY_APP_URL || "https://smartpop.vercel.app",
   authPathPrefix: "/auth",
-  sessionStorage: new MemorySessionStorage(),
+  sessionStorage: prismaSessionStorage,
   distribution: AppDistribution.AppStore,
   isEmbeddedApp: true,
+  useOnlineTokens: true,
   future: {
     unstable_newEmbeddedAuthStrategy: true,
-    removeRest: true,
   },
-  useOnlineTokens: true,
   ...(process.env.SHOP_CUSTOM_DOMAIN
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),

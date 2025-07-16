@@ -29,6 +29,8 @@ model Session {
   locale        String?
   collaborator  Boolean?  @default(false)
   emailVerified Boolean?  @default(false)
+  
+  @@map("sessions")
 }
 
 model Popup {
@@ -50,23 +52,21 @@ model Popup {
   // Relationships
   analytics     PopupAnalytics[]
   
-  @@index([shop])
-  @@index([isActive])
+  @@index([shop, isActive])
+  @@map("popups")
 }
 
 model PopupAnalytics {
   id         String   @id @default(cuid())
   popupId    String
+  popup      Popup    @relation(fields: [popupId], references: [id], onDelete: Cascade)
   event      String   // "view", "conversion", or "close"
   sessionId  String
   timestamp  DateTime @default(now())
   userAgent  String?
   referrer   String?
   
-  // Relationships
-  popup      Popup    @relation(fields: [popupId], references: [id], onDelete: Cascade)
-  
-  @@index([popupId])
-  @@index([event])
   @@index([popupId, event])
+  @@index([timestamp])
+  @@map("popup_analytics")
 }

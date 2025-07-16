@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 declare global {
-  var prismaGlobal: PrismaClient;
+  var __prisma: PrismaClient | undefined;
 }
 
 console.log("🔍 Database connection:", {
@@ -10,18 +10,13 @@ console.log("🔍 Database connection:", {
   databaseUrl: process.env.DATABASE_URL?.substring(0, 30) + "..."
 });
 
-if (process.env.NODE_ENV !== "production") {
-  if (!global.prismaGlobal) {
-    console.log("🔍 Creating new Prisma client for development");
-    global.prismaGlobal = new PrismaClient({
-      log: ['query', 'info', 'warn', 'error'],
-    });
-  }
-}
-
-const prisma = global.prismaGlobal ?? new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
+const prisma = global.__prisma || new PrismaClient({
+  log: process.env.NODE_ENV === "development" ? ['query', 'info', 'warn', 'error'] : ['error'],
 });
+
+if (process.env.NODE_ENV === "development") {
+  global.__prisma = prisma;
+}
 
 // Test database connection
 prisma.$connect().then(() => {
