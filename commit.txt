@@ -1,0 +1,21 @@
+Fix embedded app authentication CSP frame-ancestors error
+
+AUTHENTICATION FIXES:
+- Added explicit isEmbeddedApp: true to shopify.server.ts configuration
+- Updated AppProvider with shopOrigin and forceRedirect props
+- Fixed auth route to return authenticate.admin(request) directly
+- Added session.shop to loader data for proper shop context
+
+CSP FRAME-ANCESTORS ERROR FIX:
+- Updated embedded app authentication to use proper new embedded auth strategy
+- Added forceRedirect={true} to prevent iframe authentication attempts
+- Configured shopOrigin prop to ensure proper shop context
+- Fixed authentication flow to prevent X-Frame-Options conflicts
+
+This should resolve the blank screen and CSP frame-ancestors error by ensuring
+the authentication uses the proper embedded app flow instead of trying to load
+Shopify's auth page in an iframe.
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>

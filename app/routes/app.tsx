@@ -10,22 +10,24 @@ import { authenticate } from "../shopify.server";
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+  const { session } = await authenticate.admin(request);
 
   return { 
     apiKey: process.env.SHOPIFY_API_KEY || "",
-    isEmbedded: true
+    isEmbedded: true,
+    shop: session?.shop
   };
 };
 
 export default function App() {
-  const { apiKey, isEmbedded } = useLoaderData<typeof loader>();
+  const { apiKey, isEmbedded, shop } = useLoaderData<typeof loader>();
 
   return (
     <AppProvider 
       isEmbeddedApp={isEmbedded} 
       apiKey={apiKey}
-      ready={true}
+      shopOrigin={shop}
+      forceRedirect={true}
     >
       <NavMenu>
         <Link to="/app" rel="home">
