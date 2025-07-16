@@ -17,6 +17,31 @@ export default async function handleRequest(
   remixContext: EntryContext
 ) {
   addDocumentResponseHeaders(request, responseHeaders);
+  
+  // Add CSP headers for Shopify app embedding
+  const cspDirectives = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.shopify.com https://cdn.jsdelivr.net https://app-bridge.shopifycloud.com",
+    "style-src 'self' 'unsafe-inline' https://cdn.shopify.com https://fonts.googleapis.com https://app-bridge.shopifycloud.com",
+    "font-src 'self' https://cdn.shopify.com https://fonts.gstatic.com",
+    "img-src 'self' data: https: blob:",
+    "connect-src 'self' https://api.shopify.com https://app-bridge.shopifycloud.com https://cdn.shopify.com wss://app-bridge.shopifycloud.com https://*.shopify.com https://*.myshopify.com",
+    "frame-ancestors https://*.shopify.com https://admin.shopify.com https://*.myshopify.com https://shopify.com",
+    "frame-src 'self' https://*.shopify.com https://admin.shopify.com https://*.myshopify.com https://app-bridge.shopifycloud.com",
+    "worker-src 'self' blob:",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self' https://*.shopify.com https://*.myshopify.com"
+  ];
+  
+  responseHeaders.set("Content-Security-Policy", cspDirectives.join("; "));
+  
+  // Don't set X-Frame-Options when embedded - let CSP handle it
+  // X-Frame-Options can conflict with frame-ancestors directive
+  if (!request.headers.get("sec-fetch-dest")?.includes("iframe")) {
+    responseHeaders.set("X-Frame-Options", "SAMEORIGIN");
+  }
+  
   const userAgent = request.headers.get("user-agent");
   const callbackName = isbot(userAgent ?? '')
     ? "onAllReady"
