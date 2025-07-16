@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
-import { removeAllSmartPopScriptTags } from "../utils/scriptTag.server";
+import { removeAllScriptTags } from "../lib/script-tags.server";
 import { cleanupShopData } from "../models/popup.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -18,14 +18,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     
     // Remove all SmartPop script tags
     try {
-      const scriptTagResult = await removeAllSmartPopScriptTags(admin);
-      if (scriptTagResult.success) {
-        console.log(`Successfully removed ${scriptTagResult.removedCount} script tags`);
-      } else {
-        console.error("Failed to remove script tags:", scriptTagResult.error);
-      }
+      await removeAllScriptTags(request);
+      console.log("✅ Successfully removed all script tags during uninstall");
     } catch (error) {
-      console.error("Error removing script tags during uninstall:", error);
+      console.error("❌ Error removing script tags during uninstall:", error);
     }
     
     // Clean up shop data (popups and analytics)

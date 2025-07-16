@@ -22,8 +22,10 @@ import { authenticate } from "../shopify.server";
 import { 
   getAllPopups, 
   togglePopupActive, 
-  deletePopup 
+  deletePopup,
+  hasActivePopups
 } from "../models/popup.server";
+import { ensureScriptTagExists } from "../lib/script-tags.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
@@ -53,6 +55,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     switch (action) {
       case "toggle":
         await togglePopupActive(popupId, shop);
+        
+        // Check if there are any active popups and ensure script tag exists
+        const hasActive = await hasActivePopups(shop);
+        if (hasActive) {
+          try {
+            await ensureScriptTagExists(request);
+            console.log("✅ Script tag ensured after popup toggle");
+          } catch (error) {
+            console.error("❌ Failed to ensure script tag after toggle:", error);
+          }
+        }
+        
         return json({ success: true });
       case "delete":
         await deletePopup(popupId, shop);

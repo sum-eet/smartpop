@@ -29,7 +29,7 @@ import {
   deletePopup,
   getPopupAnalytics 
 } from "../models/popup.server";
-import { ensureScriptTag } from "../utils/scriptTag.server";
+import { ensureScriptTagExists } from "../lib/script-tags.server";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
@@ -143,9 +143,11 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     
     // Ensure script tag is installed (especially if popup was activated)
     if (data.isActive === "true") {
-      const scriptTagResult = await ensureScriptTag(admin);
-      if (!scriptTagResult.success) {
-        console.error("Failed to ensure script tag:", scriptTagResult.error);
+      try {
+        await ensureScriptTagExists(request);
+        console.log("✅ Script tag ensured during popup update");
+      } catch (error) {
+        console.error("❌ Failed to ensure script tag:", error);
         // Don't fail the popup update, just log the error
       }
     }

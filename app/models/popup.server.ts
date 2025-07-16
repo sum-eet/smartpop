@@ -560,3 +560,18 @@ export async function cleanupShopData(shop: string) {
     throw new Error('Failed to cleanup shop data');
   }
 }
+
+export async function hasActivePopups(shop: string) {
+  try {
+    const count = await prisma.popup.count({
+      where: {
+        shop,
+        isActive: true,
+      },
+    });
+    return count > 0;
+  } catch (error) {
+    console.error('Error checking for active popups:', error);
+    throw new Error('Failed to check for active popups');
+  }
+}

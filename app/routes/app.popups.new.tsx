@@ -20,7 +20,7 @@ import {
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { createPopup } from "../models/popup.server";
-import { ensureScriptTag } from "../utils/scriptTag.server";
+import { ensureScriptTagExists } from "../lib/script-tags.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
@@ -100,9 +100,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     });
     
     // Ensure script tag is installed
-    const scriptTagResult = await ensureScriptTag(admin);
-    if (!scriptTagResult.success) {
-      console.error("Failed to ensure script tag:", scriptTagResult.error);
+    try {
+      await ensureScriptTagExists(request);
+      console.log("✅ Script tag ensured during popup creation");
+    } catch (error) {
+      console.error("❌ Failed to ensure script tag:", error);
       // Don't fail the popup creation, just log the error
     }
     
