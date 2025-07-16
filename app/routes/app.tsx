@@ -52,7 +52,7 @@ export default function App() {
       isEmbeddedApp={isEmbedded} 
       apiKey={apiKey}
       shopOrigin={shop}
-      forceRedirect={true}
+      forceRedirect={false}
     >
       <NavMenu>
         <Link to="/app" rel="home">
