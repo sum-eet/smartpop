@@ -10,13 +10,38 @@ import { authenticate } from "../shopify.server";
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { session } = await authenticate.admin(request);
+  try {
+    console.log("🔍 App loader started", { url: request.url });
+    console.log("🔍 Environment check:", {
+      hasApiKey: !!process.env.SHOPIFY_API_KEY,
+      hasApiSecret: !!process.env.SHOPIFY_API_SECRET,
+      hasAppUrl: !!process.env.SHOPIFY_APP_URL,
+      hasDatabaseUrl: !!process.env.DATABASE_URL,
+      appUrl: process.env.SHOPIFY_APP_URL
+    });
 
-  return { 
-    apiKey: process.env.SHOPIFY_API_KEY || "",
-    isEmbedded: true,
-    shop: session?.shop
-  };
+    const { session } = await authenticate.admin(request);
+    
+    console.log("🔍 Authentication successful:", {
+      shop: session?.shop,
+      hasSession: !!session,
+      sessionId: session?.id
+    });
+
+    return { 
+      apiKey: process.env.SHOPIFY_API_KEY || "",
+      isEmbedded: true,
+      shop: session?.shop
+    };
+  } catch (error) {
+    console.error("💥 App loader error:", error);
+    console.error("💥 Error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
+    throw error;
+  }
 };
 
 export default function App() {
